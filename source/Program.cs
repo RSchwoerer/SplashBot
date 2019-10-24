@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
+// ReSharper disable LocalizableElement
+
 /*
 
     Original source: https://github.com/PaitoAnderson/WallcatWindows
@@ -22,51 +24,19 @@ using System.Windows.Forms;
 // animate icon again
 // Multi Monitor Support
 // configuration to JSON file
-// UWP? 
+// UWP?
 // Set lock screen?
 //      https://docs.microsoft.com/en-us/uwp/api/windows.system.userprofile.userprofilepersonalizationsettings.trysetlockscreenimageasync#Windows_System_UserProfile_UserProfilePersonalizationSettings_TrySetLockScreenImageAsync_Windows_Storage_StorageFile_
 // ...
 
 namespace SplashBot
 {
-    internal static class Program
-    {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        private static void Main()
-        {
-            Debug.WriteLine($@"Storage: {System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath}");
-            Debug.WriteLine($@"Current Channel: {Properties.Settings.Default.CurrentChannel}");
-            Debug.WriteLine($@"Last Checked: {Properties.Settings.Default.LastChecked}");
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            Application.ThreadException += Application_ThreadException;
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-
-            Application.Run(new MyCustomApplicationContext());
-        }
-
-        private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
-        {
-            MessageBox.Show(e.Exception.ToString(), "Thread Exception!");
-        }
-
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            MessageBox.Show((e.ExceptionObject as Exception)?.ToString(), "Unhandled Exception!");
-        }
-    }
-
     public class MyCustomApplicationContext : ApplicationContext
     {
-        private NotifyIcon _trayIcon;
         private readonly ContextMenu _contextMenu;
         private readonly UnsplashService _UnsplashService;
         private System.Threading.Timer _timer;
+        private NotifyIcon _trayIcon;
 
         public MyCustomApplicationContext()
         {
@@ -148,59 +118,42 @@ namespace SplashBot
             }
         }
 
+        private static bool IsEnabledAtStartup()
+        {
+            return System.IO.File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "SplashBot.lnk"));
+        }
+
+        private void CreateStartupShortcut()
+        {
+            string pathToExe = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string pathToShortcut = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "SplashBot.lnk");
+
+            if (IsEnabledAtStartup())
+            {
+                System.IO.File.Delete(pathToShortcut);
+            }
+            else
+            {
+                var shortcut = (IWshShortcut)new WshShell().CreateShortcut(pathToShortcut);
+
+                shortcut.Description = "Unsplash to your desktop.";
+                shortcut.TargetPath = pathToExe;
+                shortcut.Save();
+            }
+
+            foreach (MenuItem menuItem in _contextMenu.MenuItems)
+            {
+                if (menuItem.Text == "Start at login")
+                {
+                    menuItem.Checked = IsEnabledAtStartup();
+                    break;
+                }
+            }
+        }
+
         private void GotoUnsplash()
         {
             Process.Start("https://unsplash.com/");
-        }
-
-        private void UpdateWallpaper()
-        {
-            if (Properties.Settings.Default.LastChecked != DateTime.Now.Date)
-            {
-                var channel = Properties.Settings.Default.CurrentChannel;
-                if (channel != null)
-                    SelectChannel(new MenuItem { Tag = channel }, null);
-            }
-        }
-
-        private async void SelectChannel(object sender, EventArgs e)
-        {
-            using (var iconAnimation = new IconAnimation(ref _trayIcon))
-            {
-                var channel = (UnsplashChannel)((MenuItem)sender).Tag;
-
-                // Update Settings
-                Properties.Settings.Default.CurrentChannel = channel;
-                Properties.Settings.Default.LastChecked = DateTime.Now.Date;
-                Properties.Settings.Default.Save();
-                UpdateMenuSelection(channel);
-
-                var wallpaper = await _UnsplashService.GetWallpaper(channel);
-                var filePath = await DownloadFile.Get(wallpaper.Url);
-
-                if (Environment.OSVersion.Version.Major >= 8)
-                {
-                    // Windows 10
-                    SetWallpaper.Apply(null, filePath, DesktopWallpaperPosition.Fill);
-                }
-                else
-                {
-                    SetWallpaperLegacy.Apply(filePath, DesktopWallpaperPosition.Fill);
-                }
-            }
-        }
-
-        private void UpdateMenuSelection(UnsplashChannel channel)
-        {
-            Console.WriteLine("UpdateMneuSelection");
-            for (var i = _contextMenu.MenuItems.Count - 1; i >= 0; i--)
-            {
-                // Update Checkmark
-                if (_contextMenu.MenuItems[i].Tag is UnsplashChannel c)
-                {
-                    _contextMenu.MenuItems[i].Checked = c.Name == channel.Name;
-                }
-            }
         }
 
         private void MidnightUpdate()
@@ -240,17 +193,6 @@ namespace SplashBot
             }
         }
 
-        private void SuspendSession()
-        {
-            _timer.Dispose();
-        }
-
-        private void ResumeSession()
-        {
-            Retry.Do(UpdateWallpaper, TimeSpan.FromSeconds(15));
-            MidnightUpdate();
-        }
-
         private void OnSessionSwitch(object sender, SessionSwitchEventArgs e)
         {
             switch (e.Reason)
@@ -267,37 +209,97 @@ namespace SplashBot
             }
         }
 
-        private void CreateStartupShortcut()
+        private void ResumeSession()
         {
-            string pathToExe = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            string pathToShortcut = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "SplashBot.lnk");
+            Retry.Do(UpdateWallpaper, TimeSpan.FromSeconds(15));
+            MidnightUpdate();
+        }
 
-            if (IsEnabledAtStartup())
+        private async void SelectChannel(object sender, EventArgs e)
+        {
+            using (var iconAnimation = new IconAnimation(ref _trayIcon))
             {
-                System.IO.File.Delete(pathToShortcut);
-            }
-            else
-            {
-                var shortcut = (IWshShortcut)new WshShell().CreateShortcut(pathToShortcut);
+                var channel = (UnsplashChannel)((MenuItem)sender).Tag;
 
-                shortcut.Description = "Unsplash to your desktop.";
-                shortcut.TargetPath = pathToExe;
-                shortcut.Save();
-            }
+                // Update Settings
+                Properties.Settings.Default.CurrentChannel = channel;
+                Properties.Settings.Default.LastChecked = DateTime.Now.Date;
+                Properties.Settings.Default.Save();
+                UpdateMenuSelection(channel);
 
-            foreach (MenuItem menuItem in _contextMenu.MenuItems)
-            {
-                if (menuItem.Text == "Start at login")
+                var wallpaper = await _UnsplashService.GetWallpaper(channel);
+                var filePath = await DownloadFile.Get(wallpaper.Url);
+
+                if (Environment.OSVersion.Version.Major >= 8)
                 {
-                    menuItem.Checked = IsEnabledAtStartup();
-                    break;
+                    // Windows 10
+                    SetWallpaper.Apply(null, filePath, DesktopWallpaperPosition.Fill);
+                }
+                else
+                {
+                    SetWallpaperLegacy.Apply(filePath, DesktopWallpaperPosition.Fill);
                 }
             }
         }
 
-        private static bool IsEnabledAtStartup()
+        private void SuspendSession()
         {
-            return System.IO.File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "SplashBot.lnk"));
+            _timer.Dispose();
+        }
+
+        private void UpdateMenuSelection(UnsplashChannel channel)
+        {
+            Console.WriteLine("UpdateMneuSelection");
+            for (var i = _contextMenu.MenuItems.Count - 1; i >= 0; i--)
+            {
+                // Update Checkmark
+                if (_contextMenu.MenuItems[i].Tag is UnsplashChannel c)
+                {
+                    _contextMenu.MenuItems[i].Checked = c.Name == channel.Name;
+                }
+            }
+        }
+
+        private void UpdateWallpaper()
+        {
+            if (Properties.Settings.Default.LastChecked != DateTime.Now.Date)
+            {
+                var channel = Properties.Settings.Default.CurrentChannel;
+                if (channel != null)
+                    SelectChannel(new MenuItem { Tag = channel }, null);
+            }
+        }
+    }
+
+    internal static class Program
+    {
+        private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            MessageBox.Show(e.Exception.ToString(), "Thread Exception!");
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show((e.ExceptionObject as Exception)?.ToString(), "Unhandled Exception!");
+        }
+
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        private static void Main()
+        {
+            Debug.WriteLine($@"Storage: {System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath}");
+            Debug.WriteLine($@"Current Channel: {Properties.Settings.Default.CurrentChannel}");
+            Debug.WriteLine($@"Last Checked: {Properties.Settings.Default.LastChecked}");
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            Application.ThreadException += Application_ThreadException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+            Application.Run(new MyCustomApplicationContext());
         }
     }
 }

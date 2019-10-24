@@ -7,14 +7,10 @@ namespace SplashBot.Util
 {
     public class SetWallpaperLegacy
     {
-        const uint SPI_SETDESKWALLPAPER = 0x14;
-        const uint SPI_GETDESKWALLPAPER = 0x73;
-
-        const int SPIF_UPDATEINIFILE = 0x01;
-        const int SPIF_SENDWININICHANGE = 0x02;
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern int SystemParametersInfo(uint uAction, int uParam, string lpvParam, int fuWinIni);
+        private const uint SPI_GETDESKWALLPAPER = 0x73;
+        private const uint SPI_SETDESKWALLPAPER = 0x14;
+        private const int SPIF_SENDWININICHANGE = 0x02;
+        private const int SPIF_UPDATEINIFILE = 0x01;
 
         public static void Apply(string tempFilePath, DesktopWallpaperPosition style)
         {
@@ -61,5 +57,8 @@ namespace SplashBot.Util
 
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, destWallFilePath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
         }
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern int SystemParametersInfo(uint uAction, int uParam, string lpvParam, int fuWinIni);
     }
 }

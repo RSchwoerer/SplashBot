@@ -13,10 +13,6 @@ namespace SplashBot.Util
             await new WebClient().DownloadFileTaskAsync(new Uri(url), filePath);
             return filePath;
 
-
-
-
-
             /*
                 var s = new WebClient().OpenRead(uri.ToString());
 

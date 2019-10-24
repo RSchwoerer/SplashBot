@@ -40,11 +40,6 @@ namespace SplashBot.Util
             void Enable([MarshalAs(UnmanagedType.Bool)] bool enable);
         }
 
-
-        [ComImport]
-        [Guid("C2CF3110-460E-4fc1-B9D0-8A1C0C9CC4BD")]
-        public class DesktopWallpaperCoclass { }
-
         public static void Apply(uint? monitorIndex, string tempFilePath, DesktopWallpaperPosition style)
         {
             var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -93,5 +88,9 @@ namespace SplashBot.Util
                 key.SetValue(@"TileWallpaper", 0.ToString());
             }
         }
+
+        [ComImport]
+        [Guid("C2CF3110-460E-4fc1-B9D0-8A1C0C9CC4BD")]
+        public class DesktopWallpaperCoclass { }
     }
 }

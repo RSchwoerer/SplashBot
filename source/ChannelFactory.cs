@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SplashBot.Services;
+﻿using SplashBot.Services;
 
 namespace SplashBot
 {
     public static class ChannelFactory
     {
-        public static UnsplashChannel RandomChannel() =>
-            new UnsplashChannel { Name = "Random", Type = UnsplashChannelType.Random };
-
         public static UnsplashChannel[] CollectionChannels() =>
             new[]
             {
@@ -46,6 +38,9 @@ namespace SplashBot
                     Type = UnsplashChannelType.Collection
                 },
             };
+
+        public static UnsplashChannel RandomChannel() =>
+            new UnsplashChannel { Name = "Random", Type = UnsplashChannelType.Random };
 
         public static UnsplashChannel[] SearchChannels()
         {

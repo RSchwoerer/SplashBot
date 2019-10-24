@@ -4,11 +4,16 @@ using System.Windows.Forms;
 
 namespace SplashBot.Services
 {
+    public enum UnsplashChannelType
+    {
+        Collection, Search, Random
+    }
+
     public class UnsplashChannel
     {
-        public string Url { get; set; }
         public string Name { get; set; }
         public UnsplashChannelType Type { get; set; }
+        public string Url { get; set; }
     }
 
     public class Wallpaper
@@ -16,11 +21,6 @@ namespace SplashBot.Services
         public string id { get; set; }
         public string title { get; set; }
         public string Url { get; set; }
-    }
-
-    public enum UnsplashChannelType
-    {
-        Collection, Search, Random
     }
 
     internal class UnsplashService

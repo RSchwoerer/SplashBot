@@ -5,10 +5,10 @@ namespace SplashBot.Util
 {
     public class IconAnimation : IDisposable
     {
-        private readonly Timer _timer = new Timer { Interval = 500 };
-        private readonly NotifyIcon _notifyIcon;
-        private int _currentIteration;
         private const int Frames = 1;
+        private readonly NotifyIcon _notifyIcon;
+        private readonly Timer _timer = new Timer { Interval = 500 };
+        private int _currentIteration;
 
         public IconAnimation(ref NotifyIcon notifyIcon)
         {
