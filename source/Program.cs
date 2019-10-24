@@ -97,8 +97,7 @@ namespace SplashBot
                 _contextMenu.MenuItems.AddRange(
                                                 new[]
                                                 {
-                                                    new MenuItem("Unsplash.com", (sender, args) => GotoUnsplash())
-                                                    {Checked = IsEnabledAtStartup()},
+                                                    new MenuItem("Unsplash.com", (sender, args) => GotoUnsplash()),
                                                     new MenuItem("-") {Enabled = false},
                                                     new MenuItem("Random", SelectChannel)
                                                     {
