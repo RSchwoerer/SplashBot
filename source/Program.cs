@@ -82,6 +82,7 @@ namespace SplashBot
         {
             Application.ApplicationExit += OnApplicationExit;
             SystemEvents.PowerModeChanged += OnPowerChange;
+            SystemEvents.SessionSwitch += OnSessionSwitch;
 
             _UnsplashService = new UnsplashService();
             _contextMenu = new ContextMenu();
@@ -228,6 +229,9 @@ namespace SplashBot
 
         private void OnApplicationExit(object sender, EventArgs e)
         {
+            SystemEvents.PowerModeChanged -= OnPowerChange;
+            SystemEvents.SessionSwitch -= OnSessionSwitch;
+
             // Hide tray icon, otherwise it will remain shown until user mouses over it
             _trayIcon.Visible = false;
         }
@@ -237,12 +241,38 @@ namespace SplashBot
             switch (e.Mode)
             {
                 case PowerModes.Resume:
-                    Retry.Do(UpdateWallpaper, TimeSpan.FromSeconds(15));
-                    MidnightUpdate();
+                    ResumeSession();
                     break;
 
                 case PowerModes.Suspend:
-                    _timer.Dispose();
+                    SuspendSession();
+                    break;
+            }
+        }
+
+        private void SuspendSession()
+        {
+            _timer.Dispose();
+        }
+
+        private void ResumeSession()
+        {
+            Retry.Do(UpdateWallpaper, TimeSpan.FromSeconds(15));
+            MidnightUpdate();
+        }
+
+        private void OnSessionSwitch(object sender, SessionSwitchEventArgs e)
+        {
+            switch (e.Reason)
+            {
+                case SessionSwitchReason.SessionLock:
+                    // Going into lock/standby screen
+                    SuspendSession();
+                    break;
+
+                case SessionSwitchReason.SessionUnlock:
+                    // Back from lock/standby
+                    ResumeSession();
                     break;
             }
         }
