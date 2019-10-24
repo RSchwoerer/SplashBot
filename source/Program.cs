@@ -37,11 +37,9 @@ namespace SplashBot
         [STAThread]
         private static void Main()
         {
-#if DEBUG
-            Console.WriteLine($@"Storage: {System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath}");
-            Console.WriteLine($@"Current Channel: {Properties.Settings.Default.CurrentChannel}");
-            Console.WriteLine($@"Last Checked: {Properties.Settings.Default.LastChecked}");
-#endif
+            Debug.WriteLine($@"Storage: {System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath}");
+            Debug.WriteLine($@"Current Channel: {Properties.Settings.Default.CurrentChannel}");
+            Debug.WriteLine($@"Last Checked: {Properties.Settings.Default.LastChecked}");
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -54,20 +52,12 @@ namespace SplashBot
 
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
-#if DEBUG
             MessageBox.Show(e.Exception.ToString(), "Thread Exception!");
-#else
-            // new GoogleAnalytics().SubmitException(e.Exception.Message).Wait();
-#endif
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-#if DEBUG
-            MessageBox.Show((e.ExceptionObject as Exception).ToString(), "Unhandled Exception!");
-#else
-            // new GoogleAnalytics().SubmitException((e.ExceptionObject as Exception).Message).Wait();
-#endif
+            MessageBox.Show((e.ExceptionObject as Exception)?.ToString(), "Unhandled Exception!");
         }
     }
 
