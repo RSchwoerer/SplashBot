@@ -9,32 +9,38 @@ namespace SplashBot
             {
                 new UnsplashChannel
                 {
-                    Name = "Backgrounds / Textures", Url = "1368747",
+                    Name = "Backgrounds / Textures",
+                    Url = "1368747",
                     Type = UnsplashChannelType.Collection
                 },
                 new UnsplashChannel
                 {
-                    Name = "Earth Planets", Url = "894",
+                    Name = "Earth Planets",
+                    Url = "894",
                     Type = UnsplashChannelType.Collection
                 },
                 new UnsplashChannel
                 {
-                    Name = "Good Doggos of Unsplash", Url = "1270951",
+                    Name = "Good Doggos of Unsplash",
+                    Url = "1270951",
                     Type = UnsplashChannelType.Collection
                 },
                 new UnsplashChannel
                 {
-                    Name = "One Color", Url = "1103088",
+                    Name = "One Color",
+                    Url = "1103088",
                     Type = UnsplashChannelType.Collection
                 },
                 new UnsplashChannel
                 {
-                    Name = "Patterns and Textures", Url = "175083",
+                    Name = "Patterns and Textures",
+                    Url = "175083",
                     Type = UnsplashChannelType.Collection
                 },
                 new UnsplashChannel
                 {
-                    Name = "Undisturbed Pattern Wallpapers", Url = "151521",
+                    Name = "Undisturbed Pattern Wallpapers",
+                    Url = "151521",
                     Type = UnsplashChannelType.Collection
                 },
             };

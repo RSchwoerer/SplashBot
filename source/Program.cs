@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -58,7 +59,8 @@ namespace SplashBot
                 _contextMenu.MenuItems.AddRange(
                                                 new[]
                                                 {
-                                                    new MenuItem("Unsplash.com", (sender, args) => GotoUnsplash()),
+                                                    new MenuItem("SplashBot", (_,__)=> GoToSplashBot()),
+                                                    new MenuItem("Unsplash.com", (_, __) => GotoUnsplash()),
                                                     new MenuItem("-") {Enabled = false},
                                                     new MenuItem("Random", SelectChannel)
                                                     {
@@ -116,6 +118,11 @@ namespace SplashBot
                 UpdateWallpaper();
                 MidnightUpdate();
             }
+        }
+
+        private void GoToSplashBot()
+        {
+            Process.Start("https://github.com/RSchwoerer/SplashBot");
         }
 
         private static bool IsEnabledAtStartup()
@@ -228,7 +235,29 @@ namespace SplashBot
                 UpdateMenuSelection(channel);
 
                 var wallpaper = await _UnsplashService.GetWallpaper(channel);
-                var filePath = await DownloadFile.Get(wallpaper.Url);
+
+                string filePath = "";
+                try
+                {
+                    filePath = await DownloadFile.Get(wallpaper.Url);
+                }
+                catch (WebException webException)
+                {
+                    Console.WriteLine(webException);
+
+                    if (webException.Response is HttpWebResponse r)
+                    {
+                        if (r.StatusCode == HttpStatusCode.ServiceUnavailable)
+                        {
+                            MessageBox.Show("Unsplash service unavailable.", "SplashBot Error.",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+
+                            return;
+                            //filePath = GetBlackPixel();
+                        }
+                    }
+                }
 
                 if (Environment.OSVersion.Version.Major >= 8)
                 {
@@ -240,6 +269,14 @@ namespace SplashBot
                     SetWallpaperLegacy.Apply(filePath, DesktopWallpaperPosition.Fill);
                 }
             }
+        }
+
+        private static string GetBlackPixel()
+        {
+            byte[] imgByteArray = Convert.FromBase64String("R0lGODlhAQABAIAAAAAAAAAAACH5BAAAAAAALAAAAAABAAEAAAICTAEAOw==");
+            var filePath = Path.GetTempFileName();
+            System.IO.File.WriteAllBytes(filePath, imgByteArray);
+            return filePath;
         }
 
         private void SuspendSession()
