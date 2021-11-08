@@ -9,7 +9,7 @@ SplashBot updates your Windows desktop wallpaper daily from [Unsplash.com](http:
 
 
 
-![Demo](https://github.com/RSchwoerer/SplashBot/raw/master/demo.png)
+![Demo](https://github.com/RSchwoerer/SplashBot/raw/main/demo.png)
 
 
 
