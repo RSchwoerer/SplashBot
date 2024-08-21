@@ -8,49 +8,39 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SplashBot.Properties
-{
-
-
+namespace SplashBot.Properties {
+    
+    
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.2.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
-    {
-
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.11.0.0")]
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
-
-        public static Settings Default
-        {
-            get
-            {
+        
+        public static Settings Default {
+            get {
                 return defaultInstance;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::SplashBot.Services.UnsplashChannel CurrentChannel
-        {
-            get
-            {
+        public global::SplashBot.Services.UnsplashChannel CurrentChannel {
+            get {
                 return ((global::SplashBot.Services.UnsplashChannel)(this["CurrentChannel"]));
             }
-            set
-            {
+            set {
                 this["CurrentChannel"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.DateTime LastChecked
-        {
-            get
-            {
+        public global::System.DateTime LastChecked {
+            get {
                 return ((global::System.DateTime)(this["LastChecked"]));
             }
-            set
-            {
+            set {
                 this["LastChecked"] = value;
             }
         }

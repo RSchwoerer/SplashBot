@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29230.47
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplashBot", "SplashBot.csproj", "{737B333B-A79A-4DD3-8ADE-FB28EEA6BFEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplashBot_2", "..\SplashBot_2\SplashBot_2.csproj", "{BEEB7621-5729-4758-B44F-541AAC3804A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{737B333B-A79A-4DD3-8ADE-FB28EEA6BFEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{737B333B-A79A-4DD3-8ADE-FB28EEA6BFEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{737B333B-A79A-4DD3-8ADE-FB28EEA6BFEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEEB7621-5729-4758-B44F-541AAC3804A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEEB7621-5729-4758-B44F-541AAC3804A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEEB7621-5729-4758-B44F-541AAC3804A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEEB7621-5729-4758-B44F-541AAC3804A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
