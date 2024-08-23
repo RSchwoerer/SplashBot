@@ -1,26 +1,18 @@
-﻿using System.Windows;
+﻿using CommunityToolkit.Mvvm.Input;
+using System.Windows;
 using System.Windows.Input;
-using Unsplasharp;
 
 namespace SplashBot_2
 {
     internal class TaskbarIconViewModel
     {
-        public ICommand TestCommand
-        {
-            get
-            {
-                return new DelegateCommand { CommandAction = () => Test() };
-            }
-        }
+        private readonly MainWindowViewModel mainWindowViewModel;
 
-        private async void Test()
+        public TaskbarIconViewModel(MainWindowViewModel mainWindowViewModel)
         {
-            var client = new UnsplasharpClient("asdfasdf");
-            var photosFound = Task.Run(async () => await client.SearchPhotos("mountains")).GetAwaiter().GetResult();
-            // var photosFound = Task.Run(async () => await client.GetRandomPhoto()).GetAwaiter().GetResult();
+            TestCommand = new AsyncRelayCommand(Test);
+            this.mainWindowViewModel = mainWindowViewModel;
         }
-
 
         /// <summary>
         /// Shuts down the application.
@@ -42,8 +34,8 @@ namespace SplashBot_2
             {
                 return new DelegateCommand
                 {
-                    CanExecuteFunc = () => Application.Current.MainWindow != null,
-                    CommandAction = () => Application.Current.MainWindow.Close()
+                    //CanExecuteFunc = () => Application.Current.MainWindow != null,
+                    CommandAction = () => Application.Current.MainWindow.Hide()
                 };
             }
         }
@@ -57,14 +49,21 @@ namespace SplashBot_2
             {
                 return new DelegateCommand
                 {
-                    CanExecuteFunc = () => Application.Current.MainWindow == null,
+                    //CanExecuteFunc = () => Application.Current.MainWindow == null,
                     CommandAction = () =>
                     {
-                        Application.Current.MainWindow = new MainWindow();
+                        //Application.Current.MainWindow = new MainWindow();
                         Application.Current.MainWindow.Show();
                     }
                 };
             }
+        }
+
+        public IAsyncRelayCommand TestCommand { get; }
+
+        private async Task Test()
+        {
+            await mainWindowViewModel.Test();
         }
     }
 }

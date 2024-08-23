@@ -1,24 +1,30 @@
-﻿using System.Text;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SplashBot_2
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
+            DataContext = new MainWindowViewModel();
+
+            Title = "SplashBot";
+            Icon = new BitmapImage(new Uri("pack://application:,,,/SplashBot_2;component/base-icon.ico"));
             InitializeComponent();
+            Loaded += (_, __) => Hide();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            e.Cancel = true;
+            Hide();
+        }
+
+        private void TaskbarIcon_MouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            ((TaskbarIconViewModel)TaskbarIcon.DataContext).ShowWindowCommand.Execute(null);
         }
     }
 }

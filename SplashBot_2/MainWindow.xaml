@@ -3,11 +3,101 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:local="clr-namespace:SplashBot_2"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="MainWindow"
+    xmlns:us="clr-namespace:Unsplasharp.Models;assembly=Unsplasharp"
     Width="800"
     Height="450"
+    d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
     mc:Ignorable="d">
-    <Grid />
+
+    <Window.Resources>
+
+        <Style
+            x:Key="TextBlockUserName"
+            TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <DataTemplate DataType="{x:Type us:Photo}">
+            <Grid>
+                <!--
+                    your application must attribute Unsplash, the Unsplash photographer, and contain a link back to their Unsplash profile.
+                    All links back to Unsplash should use utm parameters in the ?utm_source=your_app_name&utm_medium=referral
+                -->
+                <StackPanel>
+                    <TextBlock
+                        Style="{StaticResource TextBlockUserName}"
+                        Text="{Binding User.Name}" />
+                    <TextBlock Text="{Binding Links.Html}" />
+                    <Image
+                        Width="400"
+                        HorizontalAlignment="Left"
+                        Source="{Binding Urls.Small}" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Offset="0.0" Color="#FEA466" />
+                <GradientStop Offset="1.0" Color="#FF2F71" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <hc:NotifyIcon
+            x:Name="TaskbarIcon"
+            DataContext="{Binding TaskbarIconViewModel}"
+            Icon="base-icon.ico"
+            MouseDoubleClick="TaskbarIcon_MouseDoubleClick"
+            Text="HandyControl">
+            <hc:NotifyIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem
+                        Command="{Binding ShowWindowCommand}"
+                        Header="Show Window" />
+                    <MenuItem
+                        Command="{Binding HideWindowCommand}"
+                        Header="Hide Window" />
+                    <Separator />
+                    <MenuItem
+                        Command="{Binding TestCommand}"
+                        Header="Test" />
+                    <Separator />
+                    <MenuItem
+                        Command="{Binding ExitApplicationCommand}"
+                        Header="Exit" />
+                </ContextMenu>
+            </hc:NotifyIcon.ContextMenu>
+        </hc:NotifyIcon>
+
+        <Grid
+            Margin="4"
+            Background="White">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <ContentControl Grid.Row="0"
+                Margin="24 0"
+                Content="{Binding CurrentPhoto}" />
+
+            <StackPanel Grid.Row="1">
+                <TextBlock Text="daily api calls remaining:" />
+                <TextBlock Text="{Binding ApiCallsRemaining}" />
+            </StackPanel>
+
+        </Grid>
+
+
+
+
+    </Grid>
+
 </Window>
