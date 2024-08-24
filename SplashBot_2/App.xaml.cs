@@ -17,6 +17,11 @@ namespace SplashBot_2
         {
             base.OnStartup(e);
 
+            var d = new DateTimeOffset(DateTime.Now.ToUniversalTime());
+            var ds = d.ToString();
+            var dp = DateTimeOffset.Parse(ds);
+            var dt = TimeZoneInfo.ConvertTime(dp, TimeZoneInfo.Local);
+
             //create the notifyicon (it's a resource declared in NotifyIconResources.xaml
             //taskbarIcon = (TaskbarIcon)FindResource("TaskbarIcon");
             //    taskbarIcon = (HandyControl.Controls.NotifyIcon)FindResource("TaskbarIcon");

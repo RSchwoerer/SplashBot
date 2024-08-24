@@ -14,8 +14,8 @@ namespace SplashBot_2
             client = new UnsplasharpClient(key);
         }
 
+        public int ApiCallsLimit => client.MaxRateLimit;
         public int ApiCallsRemaining => client.RateLimitRemaining;
-
         private static HttpClient downloaderClient { get; } = new HttpClient();
 
         public async Task<Unsplasharp.Models.Photo> SetTestBackground()

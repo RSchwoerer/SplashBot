@@ -7,8 +7,9 @@
     xmlns:local="clr-namespace:SplashBot_2"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:us="clr-namespace:Unsplasharp.Models;assembly=Unsplasharp"
-    Width="800"
-    Height="450"
+    Title="{Binding ApplicationTitle}"
+    Width="460"
+    Height="512"
     d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
     mc:Ignorable="d">
 
@@ -22,20 +23,53 @@
         </Style>
 
         <DataTemplate DataType="{x:Type us:Photo}">
-            <Grid>
-                <!--
-                    your application must attribute Unsplash, the Unsplash photographer, and contain a link back to their Unsplash profile.
-                    All links back to Unsplash should use utm parameters in the ?utm_source=your_app_name&utm_medium=referral
-                -->
+            <!--
+                your application must attribute Unsplash, the Unsplash photographer, and contain a link back to their Unsplash profile.
+                All links back to Unsplash should use utm parameters in the ?utm_source=your_app_name&utm_medium=referral
+            -->
+            <Grid
+                HorizontalAlignment="Left"
+                VerticalAlignment="top">
+                <Border
+                    Background="White"
+                    CornerRadius="12" />
                 <StackPanel>
                     <TextBlock
+                        Margin="12 12 12 0"
                         Style="{StaticResource TextBlockUserName}"
                         Text="{Binding User.Name}" />
-                    <TextBlock Text="{Binding Links.Html}" />
+
+                    <TextBlock
+                        Text="{Binding Links.Html}"
+                        Visibility="Collapsed" />
+                    <!--<Image
+                        Width="400"
+                        Height="225"
+                        Margin="0 24"
+                        HorizontalAlignment="Left"
+                        Source="{Binding Urls.Small}" />-->
+
                     <Image
                         Width="400"
+                        Margin="0 24"
                         HorizontalAlignment="Left"
-                        Source="{Binding Urls.Small}" />
+                        Source="{Binding Urls.Small}">
+                        <Image.Clip>
+                            <RectangleGeometry Rect="0, 0, 400, 225" />
+                        </Image.Clip>
+                    </Image>
+
+                    <Button
+                        Height="auto"
+                        Margin="12 12 12 0"
+                        HorizontalAlignment="Left"
+                        Click="Button_Click"
+                        Tag="{Binding}">
+                        <TextBlock
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="16"
+                            Text="&#xE71B;" />
+                    </Button>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -55,7 +89,7 @@
             DataContext="{Binding TaskbarIconViewModel}"
             Icon="base-icon.ico"
             MouseDoubleClick="TaskbarIcon_MouseDoubleClick"
-            Text="HandyControl">
+            Text="{Binding DataContext.ApplicationTitle, RelativeSource={RelativeSource AncestorType=Window}}">
             <hc:NotifyIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem
@@ -76,24 +110,20 @@
             </hc:NotifyIcon.ContextMenu>
         </hc:NotifyIcon>
 
-        <Grid
-            Margin="4"
-            Background="White">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
-
-            <ContentControl Grid.Row="0"
-                Margin="24 0"
-                Content="{Binding CurrentPhoto}" />
-
-            <StackPanel Grid.Row="1">
-                <TextBlock Text="daily api calls remaining:" />
-                <TextBlock Text="{Binding ApiCallsRemaining}" />
+        <DockPanel Margin="12">
+            <StackPanel DockPanel.Dock="Bottom">
+                <TextBlock
+                    VerticalAlignment="Bottom"
+                    Text="{Binding ApiLimitDetails}" />
             </StackPanel>
 
-        </Grid>
+            <ContentControl
+                Margin="12 0"
+                Content="{Binding CurrentPhoto}" />
+
+
+
+        </DockPanel>
 
 
 
