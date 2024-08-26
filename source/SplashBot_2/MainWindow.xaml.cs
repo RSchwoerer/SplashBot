@@ -6,7 +6,7 @@ using System.Windows.Media.Imaging;
 
 namespace SplashBot_2
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public MainWindow()
         {
@@ -32,7 +32,7 @@ namespace SplashBot_2
 
         private void TaskbarIcon_MouseDoubleClick(object sender, RoutedEventArgs e)
         {
-            ((TaskbarIconViewModel)TaskbarIcon.DataContext).ShowWindowCommand.Execute(null);
+            //  ((TaskbarIconViewModel)TaskbarIcon.DataContext).ShowWindowCommand.Execute(null);
         }
     }
 }

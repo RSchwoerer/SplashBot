@@ -1,0 +1,15 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <LinearGradientBrush x:Key="CoolGradientBackgroud" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0.0" Color="#FEA466" />
+        <GradientStop Offset="1.0" Color="#FF2F71" />
+    </LinearGradientBrush>
+
+    <Color x:Key="BackgroundDarkColor">#202020</Color>
+    <SolidColorBrush
+        x:Key="BackgroundDark"
+        Color="{StaticResource BackgroundDarkColor}" />
+
+</ResourceDictionary>

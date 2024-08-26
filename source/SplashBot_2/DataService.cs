@@ -8,6 +8,29 @@ namespace SplashBot_2
         private const string Col_PhotoHistory = "PhotoHistory";
         private const string dbpath = "splashbotdata";
 
+        public async Task<int> AddPhotoToPhotoHistory(Unsplasharp.Models.Photo photo, string downloadLink = "")
+        {
+            return await ExecuteNonQueryAsync(
+                @$"INSERT INTO
+                    PhotoHistory (
+                        Id,
+                        User_Name,
+                        Links_Html,
+                        Url_Small,
+                        DownloadLink,
+                        Timestamp
+                    )
+                    VALUES (
+                        '{photo.Id}',
+                        '{photo.User.Name}',
+                        '{photo.Links.Html}',
+                        '{photo.Urls.Small}',
+                        '{downloadLink}',
+                        '{new DateTimeOffset(DateTime.Now.ToUniversalTime())}'
+                    )
+                ");
+        }
+
         public async Task<Photo> GetLatPhoto()
         {
             var result = await ExecuteReader(
@@ -29,10 +52,10 @@ namespace SplashBot_2
             };
         }
 
-        public async Task<int> Initialize()
+        public async Task Initialize()
         {
-            return await ExecuteNonQueryAsync(
-                 @"CREATE TABLE IF NOT EXISTS
+            await ExecuteNonQueryAsync(
+                @"CREATE TABLE IF NOT EXISTS
                     PhotoHistory(
                     key INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                     Id TEXT NOT NULL,
@@ -43,29 +66,11 @@ namespace SplashBot_2
                     Timestamp TEXT
                     )
                 ");
-        }
 
-        public async Task<int> UpdateCurrentPhoto(Unsplasharp.Models.Photo photo, string downloadLink = "")
-        {
-            return await ExecuteNonQueryAsync(
-                @$"INSERT INTO
-                    PhotoHistory (
-                        Id,
-                        User_Name,
-                        Links_Html,
-                        Url_Small,
-                        DownloadLink,
-                        Timestamp
-                    )
-                    VALUES (
-                        '{photo.Id}',
-                        '{photo.User.Name}',
-                        '{photo.Links.Html}',
-                        '{photo.Urls.Small}',
-                        '{downloadLink}',
-                        '{new DateTimeOffset(DateTime.Now.ToUniversalTime())}'
-                    )
-                ");
+            //await ExecuteNonQueryAsync(
+            //    @"CREATE TABLE IF NOT EXISTS
+            //        Search
+            //    ");
         }
 
         private static async Task<SqliteCommand> CreateCommand()

@@ -1,0 +1,181 @@
+﻿<ui:FluentWindow
+    x:Class="SplashBot_2.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SplashBot_2"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tray="http://schemas.lepo.co/wpfui/2022/xaml/tray"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:us="clr-namespace:Unsplasharp.Models;assembly=Unsplasharp"
+    Title="{Binding ApplicationTitle}"
+    Width="460"
+    Height="512"
+    d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
+    ExtendsContentIntoTitleBar="True"
+    ResizeMode="NoResize"
+    WindowBackdropType="Mica"
+    WindowCornerPreference="Default"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+
+        <Style
+            x:Key="TextBlockUserName"
+            TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <DataTemplate DataType="{x:Type us:Photo}">
+            <!--
+                your application must attribute Unsplash, the Unsplash photographer, and contain a link back to their Unsplash profile.
+                All links back to Unsplash should use utm parameters in the ?utm_source=your_app_name&utm_medium=referral
+            -->
+            <Grid
+                HorizontalAlignment="Left"
+                VerticalAlignment="top">
+                <StackPanel>
+                    <ui:Image
+                        Width="400"
+                        Height="225"
+                        HorizontalAlignment="Left"
+                        CornerRadius="4"
+                        Source="{Binding Urls.Small}"
+                        Stretch="Fill" />
+
+                    <StackPanel Margin="12">
+                        <TextBlock
+                            Style="{StaticResource TextBlockUserName}"
+                            Text="{Binding User.Name}"
+                            TextWrapping="Wrap" />
+
+                        <TextBlock
+                            Margin="0 12"
+                            Text="{Binding Description}"
+                            TextWrapping="Wrap" />
+
+                        <StackPanel
+                            Margin="0 12"
+                            HorizontalAlignment="Left"
+                            Orientation="Horizontal">
+                            <Button
+                                Height="auto"
+                                HorizontalAlignment="Left">
+                                <TextBlock
+                                    FontFamily="Segoe MDL2 Assets"
+                                    FontSize="16"
+                                    Text="&#xEB52;" />
+                            </Button>
+                            <Button
+                                Height="auto"
+                                Margin="4 0 0 0"
+                                HorizontalAlignment="Left"
+                                Click="Button_Click"
+                                Tag="{Binding}">
+                                <TextBlock
+                                    FontFamily="Segoe MDL2 Assets"
+                                    FontSize="16"
+                                    Text="&#xE71B;" />
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0"
+            x:Name="TitleBar"
+            Title="{Binding ApplicationTitle}"
+            CloseWindowByDoubleClickOnIcon="True"
+            ShowMaximize="False">
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon Source="pack://application:,,,/SplashBot_2;component/base-icon.ico" />
+            </ui:TitleBar.Icon>
+        </ui:TitleBar>
+
+        <DockPanel Grid.Row="1"
+            Margin="24 12">
+            <StackPanel
+                Margin="0 0 0 12"
+                DockPanel.Dock="Top"
+                Orientation="Horizontal">
+                <Button
+                    Height="auto"
+                    Margin="0 0 4 0"
+                    HorizontalAlignment="Left"
+                    Command="{Binding NextImageCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0 0 4 0"
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="16"
+                            Text="&#xE974;" />
+                        <TextBlock Text="Next photo" />
+                    </StackPanel>
+                </Button>
+                <TextBox
+                    Width="280"
+                    Text="{Binding PhotoSearchQuery}"
+                    ToolTip="Photo search query" />
+            </StackPanel>
+
+            <StackPanel DockPanel.Dock="Bottom">
+                <TextBlock
+                    VerticalAlignment="Bottom"
+                    Foreground="{StaticResource TextFillColorTertiaryBrush}"
+                    Text="{Binding ApiLimitDetails}" />
+            </StackPanel>
+
+
+
+            <ContentControl Content="{Binding CurrentPhoto}" />
+
+
+
+        </DockPanel>
+
+        <local:NotifyIconPlus
+            FocusOnLeftClick="True"
+            Icon="base-icon.ico"
+            MenuOnRightClick="True"
+            TooltipText="{Binding DataContext.ApplicationTitle, RelativeSource={RelativeSource AncestorType=Window}}">
+            <local:NotifyIconPlus.Menu>
+                <ContextMenu>
+                    <MenuItem
+                        Command="{Binding ShowWindowCommand}"
+                        Header="{Binding ApplicationTitle}" />
+                    <Separator />
+                    <MenuItem
+                        Command="{Binding NextImageCommand}"
+                        Header="Next image" />
+                    <!--<Separator />
+                    <MenuItem Header="Change every">
+                        <MenuItem Header="24h" />
+                        <MenuItem Header="1 week" />
+                        <MenuItem Header="2 weeks" />
+                        <MenuItem Header="month" />
+                    </MenuItem>-->
+                    <Separator />
+                    <MenuItem
+                        Command=""
+                        Header="" />
+                    <Separator />
+                    <MenuItem
+                        Command="{Binding ExitApplicationCommand}"
+                        Header="Exit" />
+                </ContextMenu>
+            </local:NotifyIconPlus.Menu>
+        </local:NotifyIconPlus>
+
+    </Grid>
+</ui:FluentWindow>
