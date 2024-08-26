@@ -58,7 +58,14 @@ namespace SplashBot_2
             {
                 await dataService.Initialize();
                 CurrentPhoto = await dataService.GetLatPhoto();
-                CurrentPhoto = await unsplashService.GetPhoto(CurrentPhoto.Id);
+                if (CurrentPhoto != null)
+                {
+                    CurrentPhoto = await unsplashService.GetPhoto(CurrentPhoto.Id);
+                }
+                else
+                {
+                    await NextImage();
+                }
 
                 Application.Current.Exit += OnApplicationExit;
                 SystemEvents.PowerModeChanged += OnPowerChange;
