@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +11,7 @@ namespace SplashBot_2
     {
         public MainWindow()
         {
-            DataContext = new MainWindowViewModel();
+            DataContext = App.Current.Services.GetService<MainWindowViewModel>();  /* new MainWindowViewModel();*/
 
             Icon = new BitmapImage(new Uri("pack://application:,,,/SplashBot_2;component/base-icon.ico"));
             InitializeComponent();

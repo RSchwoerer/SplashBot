@@ -1,25 +1,24 @@
 ﻿using SplashBot_2.Utility;
 
-namespace SplashBot_2
+namespace SplashBot_2.Service
 {
     internal class ScheduleService
     {
-        private readonly Action updateWallpaper;
-        private System.Threading.Timer _timer;
-
-        public ScheduleService(Action updateWallpaper)
-        {
-            this.updateWallpaper = updateWallpaper;
-        }
+        private Timer _timer;
+        private Action updateWallpaper;
 
         public void Resume()
         {
+            ArgumentNullException.ThrowIfNull(updateWallpaper);
+
             Retry.Do(updateWallpaper, TimeSpan.FromSeconds(15));
             MidnightUpdate();
         }
 
-        public void Start()
+        public void Start(Action updateWallpaper)
         {
+            this.updateWallpaper = updateWallpaper;
+
             // TODO : do not set at start. let main handle initial loading of image.
             Retry.Do(updateWallpaper, TimeSpan.FromSeconds(15));
             MidnightUpdate();
@@ -33,7 +32,7 @@ namespace SplashBot_2
         private void MidnightUpdate()
         {
             var updateTime = new TimeSpan(24, 1, 0) - DateTime.Now.TimeOfDay;
-            _timer = new System.Threading.Timer(
+            _timer = new Timer(
                                                 x =>
                                                 {
                                                     updateWallpaper();

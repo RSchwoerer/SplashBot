@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
+using SplashBot_2.Service;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
@@ -11,6 +12,7 @@ namespace SplashBot_2
     internal class MainWindowViewModel : ObservableObject
     {
         private readonly DataService dataService;
+        private readonly AppSettings settings;
         private readonly UnsplashService unsplashService;
         private ICommand _ExitApplicationCommand;
         private AsyncRelayCommand _NextImageCommand;
@@ -19,13 +21,14 @@ namespace SplashBot_2
         private string photoSearchQuery = "bears,earth,landscape,northern lights";
         private ScheduleService scheduleService;
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(AppSettings settings, DataService ds, ScheduleService ss, UnsplashService us)
         {
-            unsplashService = new UnsplashService();
+            this.settings = settings;
+            unsplashService = us /*new UnsplashService()*/;
             unsplashService.ApiLimitUpdated +=
                 (sender, args) => { OnPropertyChanged(nameof(ApiLimitDetails)); };
-            dataService = new DataService();
-            scheduleService = new ScheduleService(() => NextImage());
+            dataService = ds /*new DataService()*/;
+            scheduleService = ss /*new ScheduleService(() => NextImage())*/;
 
             Initialize();
         }
@@ -48,6 +51,7 @@ namespace SplashBot_2
 
         internal async Task NextImage()
         {
+            settings.SearchText = PhotoSearchQuery;
             CurrentPhoto = await unsplashService.SetTestBackground(PhotoSearchQuery);
             await dataService.AddPhotoToPhotoHistory(CurrentPhoto);
         }
@@ -56,7 +60,6 @@ namespace SplashBot_2
         {
             try
             {
-                await dataService.Initialize();
                 CurrentPhoto = await dataService.GetLatPhoto();
                 if (CurrentPhoto != null)
                 {
@@ -70,7 +73,7 @@ namespace SplashBot_2
                 Application.Current.Exit += OnApplicationExit;
                 SystemEvents.PowerModeChanged += OnPowerChange;
                 SystemEvents.SessionSwitch += OnSessionSwitch;
-                scheduleService.Start();
+                scheduleService.Start(() => NextImage());
             }
             catch (Exception e)
             {

@@ -88,7 +88,9 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <!--  titlebar  -->
             <RowDefinition Height="auto" />
+            <!--  content  -->
             <RowDefinition />
         </Grid.RowDefinitions>
 
@@ -136,7 +138,9 @@
                     Text="{Binding ApiLimitDetails}" />
             </StackPanel>
 
-
+            <Grid DockPanel.Dock="Bottom">
+                <Button Content="History" />
+            </Grid>
 
             <ContentControl Content="{Binding CurrentPhoto}" />
 

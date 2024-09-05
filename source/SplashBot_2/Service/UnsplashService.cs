@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Windows;
 using Unsplasharp;
 
-namespace SplashBot_2
+namespace SplashBot_2.Service
 {
     internal class UnsplashService
     {
@@ -47,8 +47,8 @@ namespace SplashBot_2
             // var photosFound = Task.Run(async () => await client.GetRandomPhoto()).GetAwaiter().GetResult();
 
             // cast truncating ok here.
-            var screenWidth = (int)System.Windows.SystemParameters.PrimaryScreenWidth;
-            var screenHeight = (int)System.Windows.SystemParameters.PrimaryScreenHeight;
+            var screenWidth = (int)SystemParameters.PrimaryScreenWidth;
+            var screenHeight = (int)SystemParameters.PrimaryScreenHeight;
 
             var photoResults = await client.GetRandomPhoto(UnsplasharpClient.Orientation.Landscape, "", photoSearchQuery, screenWidth, screenHeight, 1);
             OnApiLimitUpdated();
