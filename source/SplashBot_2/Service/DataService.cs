@@ -1,5 +1,7 @@
-﻿using Microsoft.Data.Sqlite;
-using SplashBot_2.Models;
+﻿using SplashBot_2.Models;
+using System.Data;
+using System.Data.SQLite;
+using System.IO;
 using Unsplasharp.Models;
 
 namespace SplashBot_2.Service
@@ -40,29 +42,41 @@ namespace SplashBot_2.Service
 
         public async Task<Photo?> GetLatPhoto()
         {
-            var result = await ExecuteReader(
-                @"SELECT * FROM PhotoHistory ORDER BY key DESC LIMIT 1");
+            using (var db = await CreateDb())
+            {
+                var c = db.CreateCommand();
+                c.CommandText = @"SELECT * FROM PhotoHistory ORDER BY key DESC LIMIT 1";
+                var result = await c.ExecuteReaderAsync();
 
-            if (!result.HasRows) return null;
+                if (!result.HasRows) return null;
 
-            return result.ParsePhotos().FirstOrDefault();
+                return result.ParsePhotos().FirstOrDefault();
+            }
         }
 
         public async Task<List<Photo>?> GetPhotoHistory(int start = 0, int count = 1)
         {
-            var result = await ExecuteReader(
-                $@"SELECT * FROM PhotoHistory WHERE key > {start} ORDER BY key DESC LIMIT {count}");
-            return result.ParsePhotos();
+            using (var db = await CreateDb())
+            {
+                var c = db.CreateCommand();
+                c.CommandText = $@"SELECT * FROM PhotoHistory WHERE key > {start} ORDER BY key DESC LIMIT {count}";
+                var result = await c.ExecuteReaderAsync();
+                return result.ParsePhotos();
+            }
         }
 
         public async Task InitializeAppSettings(AppSettings appSettings)
         {
-            var result = await ExecuteReader(
-                @"SELECT * FROM AppSettings WHERE key = 0");
-            result.Read();
+            using (var db = await CreateDb())
+            {
+                var c = db.CreateCommand();
+                c.CommandText = @"SELECT * FROM AppSettings WHERE key = 0";
+                var result = await c.ExecuteReaderAsync();
+                result.Read();
 
-            appSettings.Foo = "testing";
-            appSettings.SearchText = result["SearchText"] as string;
+                appSettings.Foo = "testing";
+                appSettings.SearchText = result["SearchText"] as string;
+            }
         }
 
         public async Task<int> UpdateAppSetting(string setting, string searchText)
@@ -71,9 +85,11 @@ namespace SplashBot_2.Service
                  $@"UPDATE AppSettings SET {setting} = '{searchText}' WHERE key = 0");
         }
 
-        private static async Task<SqliteConnection> CreateDb()
+        private static async Task<SQLiteConnection> CreateDb()
         {
-            var db = new SqliteConnection($"Filename={dbpath}");
+            var dbfilename = Path.Join(Path.GetDirectoryName(Environment.ProcessPath), dbpath);
+            var cs = new SQLiteConnectionStringBuilder { DataSource = dbfilename };
+            var db = new SQLiteConnection(cs.ToString());
             await db.OpenAsync();
             return db;
         }
@@ -88,13 +104,17 @@ namespace SplashBot_2.Service
             }
         }
 
-        private static async Task<SqliteDataReader> ExecuteReader(string command)
+        private static async Task<DataTable> ExecuteReader(string command)
         {
+            DataTable dt = new DataTable();
             using (var db = await CreateDb())
             {
                 var c = db.CreateCommand();
                 c.CommandText = command;
-                return await c.ExecuteReaderAsync();
+                var ad = new SQLiteDataAdapter(c);
+                ad.Fill(dt); //fill the datasource
+                return dt;
+                //return await c.ExecuteReaderAsync();
             }
         }
 
@@ -125,7 +145,7 @@ namespace SplashBot_2.Service
             var settings = await ExecuteReader(
                 @"SELECT * FROM AppSettings WHERE key = 0");
 
-            if (!settings.HasRows)
+            if (settings.Rows.Count == 0)
             {
                 await ExecuteNonQueryAsync(
                     @"INSERT INTO

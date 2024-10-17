@@ -11,7 +11,7 @@ namespace SplashBot_2.Service
 
         public UnsplashService()
         {
-            var key = Environment.GetEnvironmentVariable("SPLASHBOT_APIKEY", EnvironmentVariableTarget.User);
+            string? key = GetKey();
 
             if (key == null ||
                 string.IsNullOrEmpty(key))
@@ -31,7 +31,9 @@ namespace SplashBot_2.Service
         public event EventHandler<EventArgs> ApiLimitUpdated;
 
         public int ApiCallsLimit => client.MaxRateLimit;
+
         public int ApiCallsRemaining => client.RateLimitRemaining;
+
         private static HttpClient downloaderClient { get; } = new HttpClient();
 
         public async Task<Unsplasharp.Models.Photo> GetPhoto(string photoId)
@@ -71,6 +73,16 @@ namespace SplashBot_2.Service
             }
 
             return firstPhoto;
+        }
+
+        private static string? GetKey()
+        {
+            if (File.Exists("SPLASHBOT_APIKEY"))
+            {
+                return File.ReadAllText("SPLASHBOT_APIKEY");
+            }
+
+            return Environment.GetEnvironmentVariable("SPLASHBOT_APIKEY", EnvironmentVariableTarget.User);
         }
 
         private async Task<string> Download(string url)

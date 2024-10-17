@@ -22,17 +22,17 @@ namespace SplashBot_2
             get => searchText;
             set
             {
-                _ = SetProperty(ref searchText, value).Result;
+                _ = SetProperty(ref searchText, value);
             }
         }
 
-        protected async Task<bool> SetProperty<T>([NotNullIfNotNull(nameof(newValue))] ref T field, T newValue, [CallerMemberName] string? propertyName = null)
+        protected bool SetProperty<T>([NotNullIfNotNull(nameof(newValue))] ref T field, T newValue, [CallerMemberName] string? propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, newValue))
             {
                 return false;
             }
-            await ds.UpdateAppSetting(propertyName, newValue as string);
+            ds.UpdateAppSetting(propertyName, newValue as string);
             field = newValue;
             return true;
         }

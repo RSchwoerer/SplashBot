@@ -20,7 +20,7 @@ namespace SplashBot_2.Service
             this.updateWallpaper = updateWallpaper;
 
             // TODO : do not set at start. let main handle initial loading of image.
-            Retry.Do(updateWallpaper, TimeSpan.FromSeconds(15));
+            // Retry.Do(updateWallpaper, TimeSpan.FromSeconds(15));
             MidnightUpdate();
         }
 

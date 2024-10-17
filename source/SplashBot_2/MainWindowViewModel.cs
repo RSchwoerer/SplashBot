@@ -15,6 +15,7 @@ namespace SplashBot_2
         private readonly AppSettings settings;
         private readonly UnsplashService unsplashService;
         private ICommand _ExitApplicationCommand;
+        private AsyncRelayCommand _GetHistoryCommand;
         private AsyncRelayCommand _NextImageCommand;
         private string apiCallsRemaining;
         private Photo currentPhoto;
@@ -44,8 +45,11 @@ namespace SplashBot_2
         public ICommand ExitApplicationCommand => _ExitApplicationCommand ??=
             new DelegateCommand { CommandAction = Application.Current.Shutdown };
 
+        public IAsyncRelayCommand GetHistoryCommand => _GetHistoryCommand ??=
+            new AsyncRelayCommand(GetHistory);
+
         public IAsyncRelayCommand NextImageCommand => _NextImageCommand ??=
-            new AsyncRelayCommand(NextImage);
+                    new AsyncRelayCommand(NextImage);
 
         public string PhotoSearchQuery { get => photoSearchQuery; set => SetProperty(ref photoSearchQuery, value); }
 
@@ -56,10 +60,17 @@ namespace SplashBot_2
             await dataService.AddPhotoToPhotoHistory(CurrentPhoto);
         }
 
+        private async Task GetHistory()
+        {
+            var h = await dataService.GetPhotoHistory(0, 10);
+        }
+
         private async Task Initialize()
         {
             try
             {
+                PhotoSearchQuery = settings.SearchText;
+
                 CurrentPhoto = await dataService.GetLatPhoto();
                 if (CurrentPhoto != null)
                 {
@@ -74,6 +85,8 @@ namespace SplashBot_2
                 SystemEvents.PowerModeChanged += OnPowerChange;
                 SystemEvents.SessionSwitch += OnSessionSwitch;
                 scheduleService.Start(() => NextImage());
+
+                SplashBot_2.Utility.OperatingSystem.CreateStartupShortcut();
             }
             catch (Exception e)
             {

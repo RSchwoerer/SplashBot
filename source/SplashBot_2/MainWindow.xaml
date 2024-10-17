@@ -10,7 +10,7 @@
     xmlns:us="clr-namespace:Unsplasharp.Models;assembly=Unsplasharp"
     Title="{Binding ApplicationTitle}"
     Width="460"
-    Height="512"
+    Height="560"
     d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
     ExtendsContentIntoTitleBar="True"
     ResizeMode="NoResize"
@@ -44,18 +44,23 @@
                         Source="{Binding Urls.Small}"
                         Stretch="Fill" />
 
-                    <StackPanel Margin="12">
-                        <TextBlock
+                    <Grid Margin="0 12">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0"
                             Style="{StaticResource TextBlockUserName}"
                             Text="{Binding User.Name}"
                             TextWrapping="Wrap" />
 
-                        <TextBlock
+                        <TextBlock Grid.Row="1"
                             Margin="0 12"
                             Text="{Binding Description}"
                             TextWrapping="Wrap" />
 
-                        <StackPanel
+                        <StackPanel Grid.Row="2"
                             Margin="0 12"
                             HorizontalAlignment="Left"
                             Orientation="Horizontal">
@@ -79,7 +84,7 @@
                                     Text="&#xE71B;" />
                             </Button>
                         </StackPanel>
-                    </StackPanel>
+                    </Grid>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -131,6 +136,14 @@
                     ToolTip="Photo search query" />
             </StackPanel>
 
+            <Grid
+                Margin="0 0 0 12"
+                DockPanel.Dock="Top">
+                <Button
+                    Command="{Binding GetHistoryCommand}"
+                    Content="History" />
+            </Grid>
+
             <StackPanel DockPanel.Dock="Bottom">
                 <TextBlock
                     VerticalAlignment="Bottom"
@@ -138,9 +151,7 @@
                     Text="{Binding ApiLimitDetails}" />
             </StackPanel>
 
-            <Grid DockPanel.Dock="Bottom">
-                <Button Content="History" />
-            </Grid>
+
 
             <ContentControl Content="{Binding CurrentPhoto}" />
 
