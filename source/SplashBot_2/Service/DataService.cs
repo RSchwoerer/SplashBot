@@ -1,6 +1,7 @@
 ﻿using SplashBot_2.Models;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.IO;
 using Unsplasharp.Models;
 
@@ -67,15 +68,33 @@ namespace SplashBot_2.Service
 
         public async Task InitializeAppSettings(AppSettings appSettings)
         {
-            using (var db = await CreateDb())
+            try
             {
-                var c = db.CreateCommand();
-                c.CommandText = @"SELECT * FROM AppSettings WHERE key = 0";
-                var result = await c.ExecuteReaderAsync();
-                result.Read();
+                using (var db = await CreateDb())
+                {
+                    var c = db.CreateCommand();
+                    c.CommandText = @"SELECT * FROM AppSettings WHERE key = 0";
+                    var ad = new SQLiteDataAdapter(c);
+                    DataTable dt = new();
+                    ad.Fill(dt); //fill the datasource
 
-                appSettings.Foo = "testing";
-                appSettings.SearchText = result["SearchText"] as string;
+                    if (dt.Rows.Count > 0)
+                    {
+                        appSettings.Foo = "testing";
+                        appSettings.RunAtStartup = (dt.Rows[0]["RunAtStartup"] as string ?? "").ToLower() == "true";
+                        appSettings.SearchText = dt.Rows[0]["SearchText"] as string;
+                    }
+
+                    //var result = await c.ExecuteReaderAsync();
+                    //result.Read();
+                    //appSettings.Foo = "testing";
+                    //appSettings.RunAtStartup = (result["RunAtStartup"] as string).ToLower() == "true";
+                    //appSettings.SearchText = result["SearchText"] as string;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("err");
             }
         }
 
@@ -135,11 +154,13 @@ namespace SplashBot_2.Service
 
             await ExecuteNonQueryAsync(
                 @"CREATE TABLE IF NOT EXISTS
-                    AppSettings(
-                    key INTEGER PRIMARY KEY CHECK (key = 0),
-                    NextUpdateTime TEXT,
-                    SearchText TEXT
-                    )
+                    ""AppSettings"" (
+	                    ""key""	INTEGER CHECK(""key"" = 0),
+	                    ""RunAtStartup""	TEXT,
+	                    ""NextUpdateTime""	TEXT,
+	                    ""SearchText""	TEXT,
+                   PRIMARY KEY(""key"")
+)
                 ");
 
             var settings = await ExecuteReader(
@@ -151,10 +172,11 @@ namespace SplashBot_2.Service
                     @"INSERT INTO
                         AppSettings(
                             key,
+                            RunAtStartup,
                             SearchText
                         )
                       VALUES (
-                            0, 'bears,earth,landscape,northern lights'
+                            0, 'true', 'bears,earth,landscape,northern lights'
                       )");
             }
 

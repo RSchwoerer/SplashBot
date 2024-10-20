@@ -51,21 +51,18 @@ namespace SplashBot_2.Utility
 
         public static void CreateStartupShortcut()
         {
-            string pathToExe = Environment.ProcessPath;
-            string pathToShortcut = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "SplashBot.lnk");
-
-            File.Delete(pathToShortcut);
+            RemoveStartupShortcut();
 
             IShellLink link = (IShellLink)new ShellLink();
 
             // setup shortcut information
             link.SetDescription("Unsplash to your desktop.");
-            link.SetPath(pathToExe);
+            link.SetPath(GetPathToExe());
 
             // save it
             var file = (System.Runtime.InteropServices.ComTypes.IPersistFile)link;
             //string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-            file.Save(pathToShortcut, false);
+            file.Save(GetPathToShortcut(), false);
         }
 
         public static void GoToSplashBot()
@@ -76,6 +73,21 @@ namespace SplashBot_2.Utility
         public static bool IsEnabledAtStartup()
         {
             return File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "SplashBot.lnk"));
+        }
+
+        public static void RemoveStartupShortcut()
+        {
+            File.Delete(GetPathToShortcut());
+        }
+
+        private static string GetPathToExe()
+        {
+            return Environment.ProcessPath;
+        }
+
+        private static string GetPathToShortcut()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "SplashBot.lnk"); ;
         }
 
         [ComImport]

@@ -182,8 +182,10 @@
                     </MenuItem>-->
                     <Separator />
                     <MenuItem
-                        Command=""
-                        Header="" />
+                        Command="{Binding ToggleRunAtStartupCommand}"
+                        Header="Run SplashBot at startup"
+                        IsCheckable="True"
+                        IsChecked="{Binding IsRunAtStartupSelected, Mode=OneWay}" />
                     <Separator />
                     <MenuItem
                         Command="{Binding ExitApplicationCommand}"

@@ -16,7 +16,9 @@ namespace SplashBot_2
         private readonly UnsplashService unsplashService;
         private ICommand _ExitApplicationCommand;
         private AsyncRelayCommand _GetHistoryCommand;
+        private bool _IsRunAtStartupSelected;
         private AsyncRelayCommand _NextImageCommand;
+        private AsyncRelayCommand _ToggleRunAtStartupCommand;
         private string apiCallsRemaining;
         private Photo currentPhoto;
         private string photoSearchQuery = "bears,earth,landscape,northern lights";
@@ -48,10 +50,15 @@ namespace SplashBot_2
         public IAsyncRelayCommand GetHistoryCommand => _GetHistoryCommand ??=
             new AsyncRelayCommand(GetHistory);
 
+        public bool IsRunAtStartupSelected { get => _IsRunAtStartupSelected; set => SetProperty(ref _IsRunAtStartupSelected, value); }
+
         public IAsyncRelayCommand NextImageCommand => _NextImageCommand ??=
-                    new AsyncRelayCommand(NextImage);
+                            new AsyncRelayCommand(NextImage);
 
         public string PhotoSearchQuery { get => photoSearchQuery; set => SetProperty(ref photoSearchQuery, value); }
+
+        public IAsyncRelayCommand ToggleRunAtStartupCommand => _ToggleRunAtStartupCommand ??=
+                        new AsyncRelayCommand(ToggleRunAtStartup);
 
         internal async Task NextImage()
         {
@@ -70,6 +77,8 @@ namespace SplashBot_2
             try
             {
                 PhotoSearchQuery = settings.SearchText;
+                _IsRunAtStartupSelected = settings.RunAtStartup;
+                SetRunAtStartup(IsRunAtStartupSelected);
 
                 CurrentPhoto = await dataService.GetLatPhoto();
                 if (CurrentPhoto != null)
@@ -85,8 +94,6 @@ namespace SplashBot_2
                 SystemEvents.PowerModeChanged += OnPowerChange;
                 SystemEvents.SessionSwitch += OnSessionSwitch;
                 scheduleService.Start(() => NextImage());
-
-                SplashBot_2.Utility.OperatingSystem.CreateStartupShortcut();
             }
             catch (Exception e)
             {
@@ -129,6 +136,25 @@ namespace SplashBot_2
                     scheduleService.Resume();
                     break;
             }
+        }
+
+        private void SetRunAtStartup(bool runAtStartup)
+        {
+            if (runAtStartup)
+            {
+                Utility.OperatingSystem.CreateStartupShortcut();
+            }
+            else
+            {
+                Utility.OperatingSystem.RemoveStartupShortcut();
+            }
+        }
+
+        private async Task ToggleRunAtStartup()
+        {
+            IsRunAtStartupSelected = !IsRunAtStartupSelected;
+            settings.RunAtStartup = IsRunAtStartupSelected;
+            SetRunAtStartup(IsRunAtStartupSelected);
         }
     }
 }
