@@ -3,7 +3,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Wpf.Ui.Appearance;
 
 namespace SplashBot_2
 {
@@ -11,6 +13,10 @@ namespace SplashBot_2
     {
         public MainWindow()
         {
+            //ApplicationAccentColorManager.ApplySystemAccent();
+            Color teal = (Color)ColorConverter.ConvertFromString("#308E98");
+            ApplicationAccentColorManager.Apply(teal);
+
             DataContext = App.Current.Services.GetService<MainWindowViewModel>();  /* new MainWindowViewModel();*/
 
             Icon = new BitmapImage(new Uri("pack://application:,,,/SplashBot_2;component/base-icon.ico"));

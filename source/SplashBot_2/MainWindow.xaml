@@ -85,6 +85,7 @@
                             </Button>
                         </StackPanel>
                     </Grid>
+
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -152,9 +153,9 @@
             </StackPanel>
 
 
-
-            <ContentControl Content="{Binding CurrentPhoto}" />
-
+            <ScrollViewer>
+                <ContentControl Content="{Binding CurrentPhoto}" />
+            </ScrollViewer>
 
 
         </DockPanel>

@@ -25,6 +25,7 @@ namespace SplashBot_2.Service
                     PhotoHistory (
                         Id,
                         User_Name,
+                        Description,
                         Links_Html,
                         Url_Small,
                         DownloadLink,
@@ -33,6 +34,7 @@ namespace SplashBot_2.Service
                     VALUES (
                         '{photo.Id}',
                         '{photo.User.Name}',
+                        '{photo.Description}',
                         '{photo.Links.Html}',
                         '{photo.Urls.Small}',
                         '{downloadLink}',
@@ -145,6 +147,7 @@ namespace SplashBot_2.Service
                     key INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                     Id TEXT NOT NULL,
                     User_Name TEXT NULL,
+                    Description TEXT NULL,
                     Links_Html TEXT NULL,
                     Url_Small TEXT NULL,
                     DownloadLink TEXT NULL,

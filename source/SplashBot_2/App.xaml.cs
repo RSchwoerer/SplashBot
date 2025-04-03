@@ -33,7 +33,8 @@ namespace SplashBot_2
                 .AddSingleton<DataService>()
                 .AddSingleton<ScheduleService>()
                 .AddSingleton<UnsplashService>()
-                .AddTransient<MainWindowViewModel>();
+                .AddTransient<MainWindowViewModel>()
+                .AddTransient<PhotoHistoryViewModel>();
 
             return services.BuildServiceProvider();
         }

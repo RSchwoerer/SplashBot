@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using SplashBot_2.Service;
 using System.Diagnostics;
@@ -70,6 +71,14 @@ namespace SplashBot_2
         private async Task GetHistory()
         {
             var h = await dataService.GetPhotoHistory(0, 10);
+
+            var vm = App.Current.Services.GetService<PhotoHistoryViewModel>();
+            vm.Photos = h;
+            await vm.Rehydrate();
+
+            var hw = new HistoryWindow();
+            hw.DataContext = vm;
+            hw.Show();
         }
 
         private async Task Initialize()
