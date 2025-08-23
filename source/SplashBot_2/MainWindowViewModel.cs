@@ -74,7 +74,7 @@ namespace SplashBot_2
 
             var vm = App.Current.Services.GetService<PhotoHistoryViewModel>();
             vm.Photos = h;
-            await vm.Rehydrate();
+            // await vm.Rehydrate();
 
             var hw = new HistoryWindow();
             hw.DataContext = vm;

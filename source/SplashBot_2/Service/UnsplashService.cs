@@ -56,9 +56,12 @@ namespace SplashBot_2.Service
             OnApiLimitUpdated();
 
             var firstPhoto = photoResults.First();
+            if (firstPhoto == null)
+                return null;
 
-            var dl = await client.GetPhotoDownloadLink(firstPhoto.Id);
-            OnApiLimitUpdated();
+            //var dl = await client.GetPhotoDownloadLink(firstPhoto.Id);
+            //OnApiLimitUpdated();
+            var dl = firstPhoto.Urls.Raw;
 
             var filePath = await Download(dl);
 
