@@ -10,10 +10,16 @@ namespace SplashBot_2
         private bool _RunAtStartup;
         private string searchText;
 
+        public AppSettings()
+        {
+        }
+
         public AppSettings(DataService ds)
         {
             this.ds = ds;
             ds.InitializeAppSettings(this);
+
+            SearchText= 
         }
 
         public string Foo { get; set; }
@@ -28,7 +34,13 @@ namespace SplashBot_2
         }
 
         public string SearchText
-        { get => searchText; set { _ = SetProperty(ref searchText, value); } }
+        {
+            get => searchText;
+            set
+            {
+                _ = SetProperty(ref searchText, value);
+            }
+        }
 
         protected bool SetProperty<T>([NotNullIfNotNull(nameof(newValue))] ref T field, T newValue, [CallerMemberName] string? propertyName = null)
         {

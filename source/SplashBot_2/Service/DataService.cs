@@ -1,6 +1,7 @@
 ﻿using SQLite;
 using System.Diagnostics;
 using System.IO;
+using System.Text.Json;
 
 namespace SplashBot_2.Service
 {
@@ -14,8 +15,15 @@ namespace SplashBot_2.Service
         [Column("key")]
         public int Key { get; set; }
 
-        [Column("photo")]
-        public Models.Dto.Photo? Photo { get; set; }
+        [Ignore]
+        public Models.Dto.Photo? Photo
+        {
+            get => PhotoJson == null ? null : JsonSerializer.Deserialize<Models.Dto.Photo>(PhotoJson);
+            set => PhotoJson = value == null ? null : JsonSerializer.Serialize(value);
+        }
+
+        [Column("photoJson")]
+        public string? PhotoJson { get; set; }
     }
 
     internal class DataService
@@ -32,43 +40,33 @@ namespace SplashBot_2.Service
 
         public async Task<int> AddPhotoToPhotoHistory(Unsplasharp.Models.Photo photo, string downloadLink = "")
         {
-            return 0;
-            //return await ExecuteNonQueryAsync(
-            //    @$"INSERT INTO
-            //        PhotoHistory (
-            //            Id,
-            //            User_Name,
-            //            Description,
-            //            Links_Html,
-            //            Url_Small,
-            //            DownloadLink,
-            //            Timestamp
-            //        )
-            //        VALUES (
-            //            '{photo.Id}',
-            //            '{photo.User.Name}',
-            //            '{photo.Description}',
-            //            '{photo.Links.Html}',
-            //            '{photo.Urls.Small}',
-            //            '{downloadLink}',
-            //            '{new DateTimeOffset(DateTime.Now.ToUniversalTime())}'
-            //        )
-            //    ");
+            var historyEntry = new PhotoHistory
+            {
+                Id = photo.Id,
+                Photo = photo
+            };
+
+            return _db.Insert(historyEntry);
         }
 
         public async Task<Unsplasharp.Models.Photo?> GetLatPhoto()
         {
-            return new Unsplasharp.Models.Photo();
-            //using (var db = await CreateDb())
-            //{
-            //    var c = db.CreateCommand();
-            //    c.CommandText = @"SELECT * FROM PhotoHistory ORDER BY key DESC LIMIT 1";
-            //    var result = await c.ExecuteReaderAsync();
+            try
+            {
+                var latestHistory = _db.Table<PhotoHistory>()
+                    .OrderByDescending(p => p.Key)
+                    .FirstOrDefault();
 
-            //    if (!result.HasRows) return null;
+                if (latestHistory?.Photo == null)
+                    return null;
 
-            //    return result.ParsePhotos().FirstOrDefault();
-            //}
+                return latestHistory.Photo;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error getting latest photo: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task<List<Unsplasharp.Models.Photo>?> GetPhotoHistory(int start = 0, int count = 1)
@@ -87,31 +85,20 @@ namespace SplashBot_2.Service
         {
             try
             {
-                //using (var db = await CreateDb())
-                //{
-                //    var c = db.CreateCommand();
-                //    c.CommandText = @"SELECT * FROM AppSettings WHERE key = 0";
-                //    var ad = new SQLiteDataAdapter(c);
-                //    DataTable dt = new();
-                //    ad.Fill(dt); //fill the datasource
+                _db.CreateTable<AppSettings>();
 
-                //    if (dt.Rows.Count > 0)
-                //    {
-                //        appSettings.Foo = "testing";
-                //        appSettings.RunAtStartup = (dt.Rows[0]["RunAtStartup"] as string ?? "").ToLower() == "true";
-                //        appSettings.SearchText = dt.Rows[0]["SearchText"] as string;
-                //    }
+                // Try to retrieve existing settings
+                var settings = _db.Table<AppSettings>().FirstOrDefault();
 
-                //    //var result = await c.ExecuteReaderAsync();
-                //    //result.Read();
-                //    //appSettings.Foo = "testing";
-                //    //appSettings.RunAtStartup = (result["RunAtStartup"] as string).ToLower() == "true";
-                //    //appSettings.SearchText = result["SearchText"] as string;
-                //}
+                if (settings != null)
+                {
+                    appSettings.RunAtStartup = settings.RunAtStartup;
+                    appSettings.SearchText = settings.SearchText;
+                }
             }
             catch (Exception e)
             {
-                Debug.WriteLine("err");
+                Debug.WriteLine($"Error initializing app settings: {e.Message}");
             }
         }
 
