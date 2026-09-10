@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Windows;
 using Unsplasharp;
@@ -53,17 +54,35 @@ namespace SplashBot_2.Service
             var screenHeight = (int)SystemParameters.PrimaryScreenHeight;
 
             var photoResults = await client.GetRandomPhoto(UnsplasharpClient.Orientation.Landscape, "", photoSearchQuery, screenWidth, screenHeight, 1);
+            Unsplasharp.Models.Photo firstPhoto = null;
+
+            if (photoResults != null && photoResults.Any())
+            {
+                firstPhoto = photoResults.First();
+            }
+            else
+            {
+                // try a fallback call with no query
+                var fallbackResults = await client.GetRandomPhoto(UnsplasharpClient.Orientation.Landscape, "", "", screenWidth, screenHeight, 1);
+                if (fallbackResults != null && fallbackResults.Any())
+                {
+                    firstPhoto = fallbackResults.First();
+                }
+            }
+
             OnApiLimitUpdated();
 
-            var firstPhoto = photoResults.First();
+            var filePath = string.Empty;
             if (firstPhoto == null)
-                return null;
-
-            //var dl = await client.GetPhotoDownloadLink(firstPhoto.Id);
-            //OnApiLimitUpdated();
-            var dl = firstPhoto.Urls.Raw;
-
-            var filePath = await Download(dl);
+            {
+                // No photos from API — attempt to use a local bundled fallback image
+                filePath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "default.jpg");
+            }
+            else
+            {
+                var dl = firstPhoto.Urls.Raw;
+                filePath = await Download(dl);
+            }
 
             if (Environment.OSVersion.Version.Major >= 8)
             {

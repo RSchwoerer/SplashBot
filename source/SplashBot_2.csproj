@@ -32,4 +32,10 @@
     <Resource Include="base-icon.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="default.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
