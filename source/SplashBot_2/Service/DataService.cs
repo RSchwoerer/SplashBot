@@ -95,6 +95,11 @@ namespace SplashBot_2.Service
                     appSettings.RunAtStartup = settings.RunAtStartup;
                     appSettings.SearchText = settings.SearchText;
                 }
+                else
+                {
+                    var a = new AppSettings { RunAtStartup = appSettings.RunAtStartup, SearchText = appSettings.SearchText };
+                    _db.Insert(a);
+                }
             }
             catch (Exception e)
             {

@@ -7,8 +7,8 @@ namespace SplashBot_2
     internal class AppSettings
     {
         private readonly DataService ds;
-        private bool _RunAtStartup;
-        private string searchText;
+        private bool _RunAtStartup = true;
+        private string searchText = "bears,earth,landscape,northern lights";
 
         public AppSettings()
         {
@@ -18,8 +18,6 @@ namespace SplashBot_2
         {
             this.ds = ds;
             ds.InitializeAppSettings(this);
-
-            SearchText= 
         }
 
         public string Foo { get; set; }
