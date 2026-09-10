@@ -71,14 +71,33 @@ namespace SplashBot_2.Service
 
         public async Task<List<Unsplasharp.Models.Photo>?> GetPhotoHistory(int start = 0, int count = 1)
         {
-            return new List<Unsplasharp.Models.Photo>();
-            //using (var db = await CreateDb())
-            //{
-            //    var c = db.CreateCommand();
-            //    c.CommandText = $@"SELECT * FROM PhotoHistory WHERE key > {start} ORDER BY key DESC LIMIT {count}";
-            //    var result = await c.ExecuteReaderAsync();
-            //    return result.ParsePhotos();
-            //}
+            try
+            {
+                var photoHistories = _db.Table<PhotoHistory>()
+                    .Where(p => p.Key > start)
+                    .OrderByDescending(p => p.Key)
+                    .Take(count)
+                    .ToList();
+
+                if (photoHistories.Count == 0)
+                    return null;
+
+                var photos = new List<Unsplasharp.Models.Photo>();
+                foreach (var history in photoHistories)
+                {
+                    if (history.Photo != null)
+                    {
+                        photos.Add(history.Photo);
+                    }
+                }
+
+                return photos.Count > 0 ? photos : null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error getting photo history: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task InitializeAppSettings(AppSettings appSettings)
