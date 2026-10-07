@@ -90,6 +90,8 @@ jobs:
     # Execute the MSBuild command
     - name: Run MSBuild
       run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration
+      env:
+        Configuration: ${{ matrix.configuration }}
       
     # Decode the base 64 encoded pfx and save the Signing_Certificate
     #- name: Decode the pfx
